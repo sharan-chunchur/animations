@@ -12,12 +12,14 @@ class TextWaveForm extends StatefulWidget {
   State<TextWaveForm> createState() => _TextWaveFormState();
 }
 
-class _TextWaveFormState extends State<TextWaveForm> with SingleTickerProviderStateMixin{
+class _TextWaveFormState extends State<TextWaveForm>
+    with SingleTickerProviderStateMixin {
   var loading = true;
   final char = CharNotifier();
+  int initialComntainerWidth = 201;
 
-  late AnimationController _animationControllerFontSize;
-  late Animation<double> _animationFontSize;
+  late AnimationController _animationControllerContainerWidth;
+  late Animation<double> _animationContainerWidth;
 
   late String text;
   int i = 0;
@@ -33,13 +35,13 @@ class _TextWaveFormState extends State<TextWaveForm> with SingleTickerProviderSt
   }
 
   Future<void> restart() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
       allCharDone = true;
     });
-    _animationControllerFontSize.forward();
+    _animationControllerContainerWidth.forward();
     await Future.delayed(const Duration(milliseconds: 1200));
-    _animationControllerFontSize.reverse();
+    _animationControllerContainerWidth.reverse();
     await Future.delayed(const Duration(milliseconds: 1200));
     setState(() {
       allCharDone = false;
@@ -54,12 +56,12 @@ class _TextWaveFormState extends State<TextWaveForm> with SingleTickerProviderSt
   void initState() {
     loadingTime();
 
-    _animationControllerFontSize =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
-    _animationFontSize = Tween<double>(
-      begin: 200,
-      end: 150,
-    ).animate(CurvedAnimation(parent: _animationControllerFontSize, curve: Curves.easeOut))
+    _animationControllerContainerWidth = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+    _animationContainerWidth = Tween<double>(
+      begin: initialComntainerWidth+widget.text.length/2,
+      end: initialComntainerWidth * 0.7,
+    ).animate(CurvedAnimation(parent: _animationControllerContainerWidth, curve: Curves.easeOut))
       ..addListener(() {
         setState(() {});
       });
@@ -75,9 +77,10 @@ class _TextWaveFormState extends State<TextWaveForm> with SingleTickerProviderSt
       loading = false;
     });
   }
+
   @override
   void dispose() {
-    _animationControllerFontSize.dispose();
+    _animationControllerContainerWidth.dispose();
     super.dispose();
   }
 
@@ -88,38 +91,40 @@ class _TextWaveFormState extends State<TextWaveForm> with SingleTickerProviderSt
             child: CircularProgressIndicator(),
           )
         : Scaffold(
-      // backgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             body: Center(
               child: ValueListenableBuilder(
                 valueListenable: char,
                 builder:
                     (BuildContext context, List<String> value, Widget? child) {
                   return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
                     height: 100,
-                    width: _animationFontSize.value,
+                    width: _animationContainerWidth.value,
                     color: Colors.white,
                     child: allCharDone ?
-                       Align(
-                         alignment: Alignment.centerLeft,
-                         child:  FittedBox(
-                           fit: BoxFit.scaleDown,
-                           child: Text(
-                             widget.text,
-                             style: const TextStyle(
-                                 fontSize: 50,
-                                 color: Colors.red,
-                                 fontWeight: FontWeight.bold),
-                           ),
-                         ),
-                       )
-                    : ListView.builder(
+                    Align(
+                      alignment: Alignment.center,
+                      child:  FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          widget.text,
+                          style: const TextStyle(
+                              fontSize: 50,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                        : ListView.builder(
+                      padding: EdgeInsets.zero,
                         itemCount: char.value.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           return Center(
                               child:  CharWidget(
-                            char: char.value[index],
-                            isCharDone: allCharDone,
+                                char: char.value[index],
+                                isCharDone: allCharDone,
                               ));
                         }),
                   );
@@ -129,6 +134,8 @@ class _TextWaveFormState extends State<TextWaveForm> with SingleTickerProviderSt
           );
   }
 }
+//
+
 
 class CharNotifier extends ValueNotifier<List<String>> {
   CharNotifier() : super([]);
@@ -145,3 +152,18 @@ class CharNotifier extends ValueNotifier<List<String>> {
     notifyListeners();
   }
 }
+
+
+// Container(
+// color: Colors.blue,
+// child:  Text(
+// "Hello World!",
+// style: TextStyle(
+// fontSize:  50,
+// fontWeight: FontWeight.bold),
+// ),
+// )
+
+
+// Hello World! - 274
+// Creative. - 201

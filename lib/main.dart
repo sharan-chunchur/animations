@@ -25,7 +25,7 @@ class App extends StatelessWidget {
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
-      home: const TextWaveForm(text: "Hello World"),
+      home: const TextWaveForm(text: "Creative."),
     );
   }
 }
